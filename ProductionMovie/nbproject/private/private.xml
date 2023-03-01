@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project-private xmlns="http://www.netbeans.org/ns/project-private/1">
+    <editor-bookmarks xmlns="http://www.netbeans.org/ns/editor-bookmarks/2" lastBookmarkId="0"/>
+    <open-files xmlns="http://www.netbeans.org/ns/projectui-open-files/2">
+        <group>
+            <file>file:/C:/Users/Ari/Documents/NetBeansProjects/ProductionMovie/src/java/controller/SceneController.java</file>
+            <file>file:/C:/Users/Ari/Documents/NetBeansProjects/ProductionMovie/src/java/modele/Film.java</file>
+            <file>file:/C:/Users/Ari/Documents/NetBeansProjects/ProductionMovie/src/java/controller/ProfilController.java</file>
+            <file>file:/C:/Users/Ari/Documents/NetBeansProjects/ProductionMovie/src/java/modele/FilmRealisateur.java</file>
+            <file>file:/C:/Users/Ari/Documents/NetBeansProjects/ProductionMovie/src/java/modele/Scene.java</file>
+            <file>file:/C:/Users/Ari/Documents/NetBeansProjects/ProductionMovie/src/java/hibernate/HibernateDAO.java</file>
+            <file>file:/C:/Users/Ari/Documents/NetBeansProjects/ProductionMovie/src/java/controller/FilmController.java</file>
+            <file>file:/C:/Users/Ari/Documents/NetBeansProjects/ProductionMovie/src/java/modele/SceneActeur.java</file>
+            <file>file:/C:/Users/Ari/Documents/NetBeansProjects/ProductionMovie/src/java/modele/FilmActeur.java</file>
+            <file>file:/C:/Users/Ari/Documents/NetBeansProjects/ProductionMovie/web/WEB-INF/applicationContext.xml</file>
+            <file>file:/C:/Users/Ari/Documents/NetBeansProjects/ProductionMovie/web/WEB-INF/jsp/FilmSceneDetail.jsp</file>
+            <file>file:/C:/Users/Ari/Documents/NetBeansProjects/ProductionMovie/web/WEB-INF/jsp/test.jsp</file>
+            <file>file:/C:/Users/Ari/Documents/NetBeansProjects/ProductionMovie/src/java/modele/Deroulement.java</file>
+            <file>file:/C:/Users/Ari/Documents/NetBeansProjects/ProductionMovie/src/java/modele/Plateaux.java</file>
+            <file>file:/C:/Users/Ari/Documents/NetBeansProjects/ProductionMovie/src/java/modele/Profil.java</file>
+            <file>file:/C:/Users/Ari/Documents/NetBeansProjects/ProductionMovie/web/WEB-INF/jsp/index.jsp</file>
+            <file>file:/C:/Users/Ari/Documents/NetBeansProjects/ProductionMovie/src/java/modele/Emotion.java</file>
+            <file>file:/C:/Users/Ari/Documents/NetBeansProjects/ProductionMovie/web/WEB-INF/jsp/Connexion.jsp</file>
+            <file>file:/C:/Users/Ari/Documents/NetBeansProjects/ProductionMovie/web/WEB-INF/jsp/listefilm.jsp</file>
+            <file>file:/C:/Users/Ari/Documents/NetBeansProjects/ProductionMovie/web/WEB-INF/jsp/AjoutScene.jsp</file>
+            <file>file:/C:/Users/Ari/Documents/NetBeansProjects/ProductionMovie/web/WEB-INF/jsp/AvantAjoutScene.jsp</file>
+        </group>
+    </open-files>
+</project-private>

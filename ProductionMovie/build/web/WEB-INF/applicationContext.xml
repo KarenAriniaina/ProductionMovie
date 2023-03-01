@@ -1,0 +1,51 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!-- was: <?xml version="1.0" encoding="UTF-8"?> -->
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:p="http://www.springframework.org/schema/p"
+       xmlns:aop="http://www.springframework.org/schema/aop"
+       xmlns:tx="http://www.springframework.org/schema/tx"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-4.0.xsd
+       http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-4.0.xsd
+       http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-4.0.xsd">
+
+    <bean id="dataSource" class="org.apache.commons.dbcp.BasicDataSource"
+          destroy-method="close">
+        <property name="driverClassName" value="org.postgresql.Driver" />
+        <property name="url" value="jdbc:postgresql://localhost:5432/productionmovie" />
+        <property name="username" value="postgres" />
+        <property name="password" value="karen" />
+    </bean>
+    <!--
+    <bean id="HibernateDAO" class="hibernate.HibernateDAO">  
+    </bean>  
+    <bean id="DAOService" class="service.DAOService">
+        <property name="DAO" ref="HibernateDAO"></property>  
+    </bean>  
+    -->
+    <bean id="hibernate4AnnotatedSessionFactory"
+          class="org.springframework.orm.hibernate4.LocalSessionFactoryBean">
+        <property name="dataSource" ref="dataSource" />
+        <property name="packagesToScan" value="modele" />
+        <property name="hibernateProperties">
+            <props>
+                <prop key="hibernate.dialect">org.hibernate.dialect.PostgreSQLDialect</prop>
+                <prop key="hibernate.current_session_context_class">thread</prop>
+                <prop key="hibernate.show_sql">false</prop>
+            </props>
+        </property>
+    </bean>
+    
+    <bean id="hibernatedao" class="hibernate.HibernateDAO">
+        <property name="SF" ref="hibernate4AnnotatedSessionFactory" />
+    </bean>
+    <bean id="profilController" class="controller.ProfilController">
+        <property name="dao" ref="hibernatedao" />
+    </bean>
+    <bean id="sceneController" class="controller.SceneController">
+        <property name="dao" ref="hibernatedao" />
+    </bean>
+    <bean id="filmController" class="controller.FilmController">
+        <property name="dao" ref="hibernatedao" />
+    </bean>
+</beans>
