@@ -67,6 +67,9 @@ public class FilmController {
 
     @RequestMapping(method = RequestMethod.GET, value = "/Film")
     public String ListeFilm(Model model, HttpSession session, HttpServletRequest request) throws Exception {
+        if(session.getAttribute("idActeur")==null && session.getAttribute("idAuteur")==null && session.getAttribute("idRealisateur")==null){
+            return "redirect:/Connexion";
+        }
         Film f = new Film();
         f.setId(Integer.parseInt(request.getParameter("idFilm")));
         f.getFilm(dao);
