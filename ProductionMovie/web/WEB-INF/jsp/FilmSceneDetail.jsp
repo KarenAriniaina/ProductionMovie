@@ -1,3 +1,5 @@
+<%@page import="modele.PropositionPlanning"%>
+<%@page import="modele.Planification"%>
 <%@page import="modele.Film"%>
 <%@page import="modele.Plateaux"%>
 <%@page import="java.util.ArrayList"%>
@@ -26,8 +28,8 @@
     if (session.getAttribute("idActeur") != null) {
         sActeur = (int) session.getAttribute("idActeur");
     }
-    ArrayList<ArrayList<Scene>> lsc = (ArrayList<ArrayList<Scene>>) request.getAttribute("lsc");
-    Film f = (Film) request.getAttribute("Film");
+    int p = 1;
+    ArrayList<PropositionPlanning> lpl = (ArrayList<PropositionPlanning>) request.getAttribute("lp");
 %>
 
 
@@ -56,6 +58,114 @@
         <link rel="stylesheet" href="css/plugins/magnific-popup/magnific-popup.css">
         <!-- manin stylesheet -->
         <link rel="stylesheet" href="css/css/style.css">
+        <script>
+            function CheckJour(j, p, nbrP) {
+                var jour = document.getElementById("checkJour" + j).checked;
+                if (jour === true) {
+                    for (let i = 0; i < nbrP; i++) {
+                        document.getElementById("checkPlateau" + j + (p + i)).checked = true;
+                        var elements = document.getElementsByTagName("*");
+                        var filteredElements = [];
+                        for (var e = 0; e < elements.length; e++) {
+                            var element = elements[e];
+                            var id = element.getAttribute("id");
+                            if (id && id.startsWith("checkScene" + (p + i))) {
+                                element.checked = true;
+                            }
+                        }
+
+                    }
+                } else {
+                    for (let i = 0; i < nbrP; i++) {
+                        document.getElementById("checkPlateau" + j + (p + i)).checked = false;
+                        var elements = document.getElementsByTagName("*");
+                        var filteredElements = [];
+                        for (var e = 0; e < elements.length; e++) {
+                            var element = elements[e];
+                            var id = element.getAttribute("id");
+                            if (id && id.startsWith("checkScene" + (p + i))) {
+                                element.checked = false;
+                            }
+                        }
+                    }
+                }
+                //alert(j);
+            }
+            function CheckPlateau(j, p, nbr) {
+                //alert(p);
+                var cj = document.getElementById("checkJour" + j);
+                var cp = document.getElementById("checkPlateau" + j + p).checked;
+                //console.log(document.getElementById("checkPlateau" + j + p).checked);
+                if (cp === true) {
+                    for (let i = 1; i <= nbr; i++) {
+                        document.getElementById("checkScene" + p + "-" + i).checked = true;
+                    }
+                } else {
+                    cj.checked = false;
+                    for (let i = 1; i <= nbr; i++) {
+                        document.getElementById("checkScene" + p + "-" + i).checked = false;
+                    }
+                }
+
+            }
+            function CheckScene(s, p, j, nbrScene, nbrP) {
+                //alert(p);
+                var cj = document.getElementById("checkJour" + j);
+                var cp = document.getElementById("checkPlateau" + j + p);
+                var cs = document.getElementById("checkScene" + p + "-" + s).checked;
+                //console.log(document.getElementById("checkPlateau" + j + p).checked);
+                if (cs === false) {
+                    cp.checked = false;
+                    cj.checked = false;
+                } else {
+                    var elements = document.getElementsByTagName("*");
+                    var filteredElements = [];
+                    let n = 0;
+                    for (var e = 0; e < elements.length; e++) {
+                        let element = elements[e];
+                        let id = element.getAttribute("id");
+                        if (id && id.startsWith("checkScene" + p)) {
+                            if (element.checked === true)
+                                n++;
+                        }
+                    }
+                    if (n == nbrScene) {
+                        cp.checked = true;
+                        var element = document.getElementsByTagName("*");
+                        let nb = 0;
+                        for (var i = 0; i < element.length; i++) {
+                            let elementt = element[i];
+                            let id = elementt.getAttribute("id");
+                            if (id && id.startsWith("checkPlateau" + j)) {
+                                if (elementt.checked === true)
+                                    nb++;
+                            }
+                        }
+                        if (nb == nbrP)
+                            cj.checked = true;
+                    }
+                }
+            }
+            function validation(p) {
+                var listeid = [];
+                var element = document.getElementsByTagName("*");
+                let nb = 0;
+                for (let j = 1; j <= p; j++) {
+                    for (var i = 0; i < element.length; i++) {
+                        let elementt = element[i];
+                        let id = elementt.getAttribute("id");
+                        if (id && id.startsWith("checkScene" + j)) {
+                            if (elementt.checked === true) {
+                                let idP = elementt.getAttribute("id").split("-")[1];
+                                listeid.push(document.getElementById("Scene" + j + idP).value)
+                            }
+                        }
+                    }
+                }
+                document.getElementById("lidP").value = listeid.toString();
+                //alert(document.getElementById("lidP").value)
+            }
+        </script>
     </head>
     <body>
         <header class="header-top bg-dark">
@@ -95,52 +205,78 @@
         <section class="section-padding pt-4">
             <div class="container">
                 <div class="row">
-
-                    <%
-                        if (!lsc.isEmpty()) {
-                            for (int i = 0; i < lsc.size(); i++) {
-
-                    %>
                     <div class="col-lg-8 col-md-12 col-sm-12 col-xs-12">
+                        <form action="<%= request.getContextPath()%>/PlanificationSubmit" method="POST">
+                            <%
+                                if (!lpl.isEmpty()) {
+                                    int j = 1;
+                                    int nbrp = 0;
+                                    for (PropositionPlanning pl : lpl) {
+                                        if (pl.getListePlanifications() != null && !pl.getListePlanifications().isEmpty()) {
+                                            nbrp = pl.getListePlanifications().size();
+                                        }
+                            %>
 
-                        <article class="post-list mb-5 pb-4 border-bottom">
-                            <div class="meta-cat">
-                                <span class="letter-spacing cat-name font-extra text-uppercase font-sm">Schedule Jour <%= i + 1%></span>
-                            </div>
-                        </article>
-                        <% for (Scene sc : lsc.get(i)) { %>
-                        <div class="mb-4 post-list border-bottom pb-4">
-                            <div class="row no-gutters">
-                                <div class="col-md-5">
-                                    <a class="post-thumb " href="blog-single.html">
-                                        <img src="css/images/cat/cinema.jpg" alt="" class="img-fluid w-100">
-                                    </a>
+                            <article class="post-list mb-5 pb-4 border-bottom">
+                                <div class="meta-cat">
+                                    <span class="letter-spacing cat-name font-extra text-uppercase font-sm">Schedule Jour <%= pl.getDate()%></span>
+                                    <input type="checkbox" name="checkJour" id="checkJour<%= j%>" onchange="CheckJour(<%= j%>,<%= p%>,<%= nbrp%>)"/>
                                 </div>
+                            </article>
+                            <% if (pl.getListePlanifications() != null && !pl.getListePlanifications().isEmpty()) {  %>
+                            <% for (ArrayList<Planification> lp : pl.getListePlanifications()) {
+                                    int s = 1;%>
+                            <article class="post-list mb-5 pb-4 border-bottom">
+                                <div class="meta-cat">
+                                    <span class="letter-spacing cat-name font-extra text-uppercase font-sm"><%= lp.get(0).getPlateauxTourner().getNom()%></span>
+                                    <input type="checkbox" name="checkPlateaux" id="checkPlateau<%= j%><%=p%>" onchange="CheckPlateau(<%= j%>,<%= p%>,<%= lp.size()%>)"/>
+                                </div>
+                            </article>
+                            <% for (Planification pa : lp) {%>
+                            <div class="mb-4 post-list border-bottom pb-4">
+                                <div class="row no-gutters">
+                                    <div class="col-md-5">
+                                        <a class="post-thumb " href="<%= request.getContextPath()%>/DetailScene?id=<%= pa.getSceneTourner().getId()%>">
+                                            <img src="css/images/cat/cinema.jpg" alt="" class="img-fluid w-100">
+                                        </a>
+                                    </div>
 
-                                <div class="col-md-7">
-                                    <div class="post-article mt-sm-3">
-                                        <div class="meta-cat">
-                                            <span
-                                                class="letter-spacing cat-name font-extra text-uppercase font-sm">Scene </span>
-                                        </div>
-                                        <h3 class="post-title mt-2"><a href="blog-single.html"><%= sc.getTitre() %></a></h3>
-
-                                        <div class="post-meta">
-                                            <ul class="list-inline">
-                                                <li class="post-like list-inline-item">
-                                                    <span class="font-sm letter-spacing-1 text-uppercase"><i
-                                                            class="ti-time mr-2"></i><%= sc.getDureeScene() %></span>
-                                                </li>
-                                            </ul>
+                                    <div class="col-md-7">
+                                        <div class="post-article mt-sm-3">
+                                            <div class="meta-cat">
+                                                <span
+                                                    class="letter-spacing cat-name font-extra text-uppercase font-sm">Scene </span>
+                                            </div>
+                                            <h3 class="post-title mt-2"><a href="<%= request.getContextPath()%>/DetailScene?id=<%= pa.getSceneTourner().getId()%>"><%= pa.getSceneTourner().getTitre()%></a>
+                                                <input type="checkbox" name="checkScene" id="checkScene<%= p%>-<%= s%>" onchange="CheckScene(<%= s%>,<%= p%>,<%= j%>,<%= lp.size()%>,<%= nbrp%>)" /></h3>
+                                            <input type="hidden" id="Scene<%= p%><%= s%>" value="<%= pa.getId()%>"/>
+                                            <div class="post-meta">
+                                                <ul class="list-inline">
+                                                    <li class="post-like list-inline-item">
+                                                        <span class="font-sm letter-spacing-1 text-uppercase"><i
+                                                                class="ti-time mr-2"></i> <%= pa.getSceneTourner().getDureeScene()%></span>
+                                                    </li>   
+                                                </ul>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
                             </div>
-                        </div>
-                        <% } %>
+                            <% s++;
+                                } %>
+                            <% p++;
+                                } %>
+                            <% } %>
+                            <% j++;
+                                } %>
+                            <% } else { %>
+                            <p>vide</p>
+                            <% }%>
+                            <input type="hidden" value="" name="lidP" id="lidP"/>
+                            <input type="submit" class="btn btn-primary mt-3 col-lg-12" onclick="validation(<%= p%>)" value="Valider" />
+                        </form>
                     </div>
-                    <% } %>
-                    <% }%>
+
                 </div>
             </div>
         </section>
@@ -150,7 +286,7 @@
                 <div class="row justify-content-center">
                     <div class="col-lg-6">
                         <div class="copyright text-center ">
-                            @ copyright all reserved to Karen - 2023
+                            @ copyright all reserved to Karen ETU001445 - 2023
                         </div>
                     </div>
                 </div>

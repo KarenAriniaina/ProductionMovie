@@ -8,11 +8,11 @@ package modele;
 import hibernate.HibernateDAO;
 import java.sql.Time;
 import java.util.ArrayList;
+import java.util.List;
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.Table;
 import org.hibernate.criterion.Criterion;
 import org.hibernate.criterion.Restrictions;
 
@@ -21,10 +21,10 @@ import org.hibernate.criterion.Restrictions;
  * @author Ari
  */
 @Entity
-public class Deroulement {
+@Table(name = "v_Deroulement")
+public class V_Deroulement {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
 
     @Column
@@ -32,6 +32,9 @@ public class Deroulement {
 
     @Column
     private int idActeur;
+    
+    @Column
+    private String NomActeur;
 
     @Column
     private String Emotion;
@@ -44,10 +47,6 @@ public class Deroulement {
 
     @Column
     private Time Duree;
-
-    public Deroulement() {
-        //throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
 
     public int getId() {
         return id;
@@ -63,6 +62,22 @@ public class Deroulement {
 
     public void setIdScene(int idScene) {
         this.idScene = idScene;
+    }
+
+    public int getIdActeur() {
+        return idActeur;
+    }
+
+    public void setIdActeur(int idActeur) {
+        this.idActeur = idActeur;
+    }
+
+    public String getNomActeur() {
+        return NomActeur;
+    }
+
+    public void setNomActeur(String NomActeur) {
+        this.NomActeur = NomActeur;
     }
 
     public String getEmotion() {
@@ -89,14 +104,6 @@ public class Deroulement {
         this.Ordre = Ordre;
     }
 
-    public int getIdActeur() {
-        return idActeur;
-    }
-
-    public void setIdActeur(int idActeur) {
-        this.idActeur = idActeur;
-    }
-
     public Time getDuree() {
         return Duree;
     }
@@ -105,42 +112,17 @@ public class Deroulement {
         this.Duree = Duree;
     }
 
-    public void getDeroulement(HibernateDAO dao) throws Exception {
+    public ArrayList<V_Deroulement> getDeroulement(HibernateDAO dao) throws Exception{
+        ArrayList<V_Deroulement> valiny=new ArrayList<>();
         ArrayList<Criterion> lcr = new ArrayList<>();
-        if (id != 0) {
-            lcr.add(Restrictions.eq("id", id));
-        }
-        if (idScene != 0) {
+        if(idScene!=0){
             lcr.add(Restrictions.eq("idScene", idScene));
         }
         try {
-            ArrayList<Deroulement> lsc = (ArrayList<Deroulement>) dao.FindByCritere(this, lcr,null);
-            Deroulement sc = lsc.get(0);
-            this.setId(sc.getId());
-            this.setEmotion(sc.getEmotion());
-            this.setTexte(sc.getTexte());
-            this.setDuree(sc.getDuree());
-            this.setIdActeur(sc.getIdActeur());
-            this.setIdScene(sc.getIdScene());
-            this.setOrdre(sc.getOrdre());
+             valiny = (ArrayList<V_Deroulement>) dao.FindByCritere(this, lcr,null);
         } catch (Exception e) {
             throw e;
         }
+        return valiny;
     }
-
-    public ArrayList<Deroulement> getListeDeroulement(HibernateDAO dao) throws Exception {
-        ArrayList<Criterion> lcr = new ArrayList<>();
-        if (id != 0) {
-            lcr.add(Restrictions.eq("id", id));
-        }
-        if (idScene != 0) {
-            lcr.add(Restrictions.eq("idScene", idScene));
-        }
-        try {
-            return (ArrayList<Deroulement>) dao.FindByCritere(this, lcr,"Ordre");
-        } catch (Exception e) {
-            throw e;
-        }
-    }
-
 }

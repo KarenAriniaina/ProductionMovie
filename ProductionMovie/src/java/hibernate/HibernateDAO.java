@@ -7,7 +7,9 @@ package hibernate;
 
 import java.util.ArrayList;
 import java.util.List;
+import modele.SceneActeur;
 import org.hibernate.Criteria;
+import org.hibernate.SQLQuery;
 import org.hibernate.Session;
 import org.hibernate.Transaction;
 import org.hibernate.criterion.Criterion;
@@ -31,6 +33,71 @@ public class HibernateDAO {
             s = getSessionFactory().openSession();
             tx = s.beginTransaction();
             s.save(o);
+            tx.commit();
+
+        } catch (Throwable e) {
+            if (tx != null) {
+                tx.rollback();
+            }
+            throw e;
+        } finally {
+            if (s != null) {
+                s.close();
+            }
+        }
+    }
+
+    public void ExcecuteSQl(String sql) throws Exception {
+        Session s = null;
+        Transaction tx = null;
+        try {
+            s = getSessionFactory().openSession();
+            tx = s.beginTransaction();
+            SQLQuery query = s.createSQLQuery(sql);
+            query.executeUpdate();
+            //s.delete("", o);
+            //s.delete(o);
+            tx.commit();
+
+        } catch (Throwable e) {
+            if (tx != null) {
+                tx.rollback();
+            }
+            throw e;
+        } finally {
+            if (s != null) {
+                s.close();
+            }
+        }
+    }
+    
+    public List ListeBySQl(String sql,Class c) throws Exception {
+        Session s = null;
+        try {
+            s = getSessionFactory().openSession();
+            SQLQuery query = s.createSQLQuery(sql);
+            query.addEntity(c);
+            return query.list();
+            //s.delete("", o);
+            //s.delete(o);
+
+        } catch (Throwable e) {
+            throw e;
+        } finally {
+            if (s != null) {
+                s.close();
+            }
+        }
+    }
+
+    public void Delete(Object o) throws Exception {
+        Session s = null;
+        Transaction tx = null;
+        try {
+            s = getSessionFactory().openSession();
+            tx = s.beginTransaction();
+            //s.delete("", o);
+            s.delete(o);
             tx.commit();
 
         } catch (Throwable e) {
@@ -119,16 +186,19 @@ public class HibernateDAO {
         return results;
     }
 
-    public List FindByCritere(Object o, ArrayList<Criterion> lc) throws Exception {
+    public List FindByCritere(Object o, ArrayList<Criterion> lc, String order) throws Exception {
         Session s = null;
         List valiny = null;
         try {
             s = getSessionFactory().openSession();
             Criteria c = s.createCriteria(o.getClass());
-            if (lc!=null && !lc.isEmpty()) {
+            if (lc != null && !lc.isEmpty()) {
                 lc.forEach((cr) -> {
                     c.add(cr);
                 });
+            }
+            if (order != null) {
+                c.addOrder(Order.desc(order));
             }
             valiny = c.list();
         } catch (Throwable e) {
@@ -142,7 +212,17 @@ public class HibernateDAO {
         return valiny;
     }
 
-    public List FindByCriterePaginer(Object o, ArrayList<Criterion> lc, int debut, int nbr,String order) throws Exception {
+    public List Test(int idScene) throws Exception {
+        Session s = getSessionFactory().openSession();
+        String sql = "SELECT * FROM SceneActeur WHERE idScene = :id";
+        SQLQuery query = s.createSQLQuery(sql);
+        query.setParameter("id", idScene);
+        System.err.println(query.toString());
+        query.addEntity(SceneActeur.class);
+        return query.list();
+    }
+
+    public List FindByCriterePaginer(Object o, ArrayList<Criterion> lc, int debut, int nbr, String order) throws Exception {
         Session s = null;
         List valiny = null;
         try {
@@ -153,7 +233,9 @@ public class HibernateDAO {
                     c.add(cr);
                 });
             }
-            if(order!=null) c.addOrder(Order.desc(order));
+            if (order != null) {
+                c.addOrder(Order.desc(order));
+            }
             c.setFirstResult(debut)
                     .setMaxResults(nbr);
             valiny = c.list();
@@ -208,8 +290,8 @@ public class HibernateDAO {
         }
         return valiny;
     }
-    
-     public List FindOrderBy(Object o, ArrayList<Criterion> lc,String order) throws Exception {
+
+    public List FindOrderBy(Object o, ArrayList<Criterion> lc, String order) throws Exception {
         Session s = null;
         List valiny = null;
         try {
@@ -220,7 +302,9 @@ public class HibernateDAO {
                     c.add(cr);
                 });
             }
-            if(order!=null) c.addOrder(Order.desc(order));
+            if (order != null) {
+                c.addOrder(Order.desc(order));
+            }
             valiny = c.list();
         } catch (Throwable e) {
             throw e;

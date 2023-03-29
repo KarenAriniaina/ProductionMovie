@@ -53,7 +53,7 @@ public class FilmActeur {
             lcr.add(Restrictions.eq("idActeur", idActeur));
         }
         try {
-            valiny = (ArrayList<FilmActeur>) dao.FindByCritere(this, lcr);
+            valiny = (ArrayList<FilmActeur>) dao.FindByCritere(this, lcr,null);
         } catch (Exception e) {
             throw e;
         }

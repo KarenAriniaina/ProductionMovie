@@ -112,7 +112,7 @@
                 <div class="row justify-content-center">
                     <div class="col-lg-6">
                         <div class="copyright text-center ">
-                            @ copyright all reserved to Karen - 2023
+                             @ copyright all reserved to Karen ETU001445 - 2023
                         </div>
                     </div>
                 </div>

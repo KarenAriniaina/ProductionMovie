@@ -98,8 +98,8 @@
             let index = listeActeur.indexOf(id);
             listeActeur.splice(index, 1);
             tabActeur.removeChild(sup);
-            document.getElementById("nbrscenario").value=d;
-            document.getElementById("lacteur").value=listeActeur;
+            document.getElementById("nbrscenario").value = d;
+            document.getElementById("lacteur").value = listeActeur;
         }
 
         function createInput(id, value) {
@@ -120,11 +120,12 @@
             var emotion = document.getElementById("Emotion").value;
             var Acteur = document.getElementById("idActeurDialogue").value;
             var Ordre = document.getElementById("Ordre").value;
+            var Duree = document.getElementById("Duree").value;
             console.log("Acteur=" + Acteur);
             var NomAct = "";
             var idAct = "";
             if (Acteur !== "") {
-                Acteur = Acteur.split(" ");
+                Acteur = Acteur.split("@");
                 idAct = Acteur[0];
                 NomAct = Acteur[1];
             }
@@ -142,8 +143,10 @@
                     let cellEmotion = document.createElement("td");
                     let cellTexte = document.createElement("td");
                     let cellOrdre = document.createElement("td");
+                    let cellDuree = document.createElement("td");
                     let cellTextTexte = document.createTextNode(texte);
                     let cellTextAuteur = document.createTextNode(NomAct);
+                    let cellTextDuree = document.createTextNode(Duree);
                     let cellTextEmotion = document.createTextNode(emotion);
 
                     let cellButton = document.createElement("td");
@@ -164,6 +167,9 @@
                     let inputActeur = createInput("Acteurvalue" + d, idAct);
                     form.appendChild(inputActeur);
 
+                    let inputDuree = createInput("Dureevalue" + d, Duree);
+                    form.appendChild(inputDuree);
+
                     let inputText = createInput("Textevalue" + d, texte);
                     form.appendChild(inputText);
 
@@ -176,6 +182,7 @@
                     cellAuteur.appendChild(cellTextAuteur);
                     cellEmotion.appendChild(cellTextEmotion);
                     cellTexte.appendChild(cellTextTexte);
+                    cellDuree.appendChild(cellTextDuree);
                     let cellOrdreInput = document.createElement("input");
                     cellOrdreInput.setAttribute("class", "form-control");
                     cellOrdreInput.setAttribute("id", "Ordre" + d);
@@ -187,6 +194,7 @@
                     btr.appendChild(cellEmotion);
                     btr.appendChild(cellAuteur);
                     btr.appendChild(cellTexte);
+                    btr.appendChild(cellDuree);
                     btr.appendChild(cellOrdre);
                     btr.appendChild(cellButton);
                     btr.appendChild(cellModif);
@@ -233,6 +241,7 @@
             form.removeChild(document.getElementById("Emotionvalue" + id));
             form.removeChild(document.getElementById("Acteurvalue" + id));
             form.removeChild(document.getElementById("Textevalue" + id));
+            form.removeChild(document.getElementById("Dureevalue" + id));
             tabDerouelement.removeChild(sup);
         }
     </script>
@@ -278,14 +287,17 @@
                 <form action="<%= request.getContextPath()%>/AjoutSceneSubmit" method="POST" id="form">
                     <label>Titre</label>
                     <input type="text" class="form-control" placeholder="Titre" name="Titre"/>
-                    <label>Duree scène</label>
-                    <input type="time" class="form-control" placeholder="Duree" name="DureeScene"/>
                     <label class="mt-3">Plateaux</label>
                     <select class="form-control" name="idPlateaux">
                         <option value="">Plateaux</option>
                         <% for (Plateaux p : lp) {%>
                         <option value="<%= p.getId()%>"><%= p.getNom()%></option>
                         <% } %>
+                    </select>
+                    <label class="mt-3">Statut:</label>
+                    <select name="Statut" class="form-control mb-3 mb-lg-0">
+                        <option value="0">ecriture En cours</option>
+                        <option value="1">ecriture Termine</option>
                     </select>
                     <table class="table" id="tbActeur">
                         <tr>
@@ -310,6 +322,7 @@
                             <th>Emotion</th>
                             <th>Acteur</th>
                             <th>Texte</th>
+                            <th>Duree</th>
                             <th>Ordre</th>
                             <th></th>
                             <th></th>
@@ -327,11 +340,12 @@
                                 <select class="form-control" id="idActeurDialogue">
                                     <option value="">Acteur</option>
                                     <% for (Profil pr : la) {%>
-                                    <option value="<%= pr.getId() + " " + pr.getNom()%>"><%= pr.getNom()%></option>
+                                    <option value="<%= pr.getId() + "@" + pr.getNom()%>"><%= pr.getNom()%></option>
                                     <% }%>
                                 </select>
                             </td>
                             <td><textarea class="form-control" id="texte" rows="1"> </textarea></td>
+                            <td><input type="time" class="form-control" placeholder="Duree" id="Duree"/></td>
                             <td><input type="text" class="form-control" id="Ordre" placeholder="Ordre"/></td>
                             <td><a class="form-group btn btn-primary col-lg-12" onclick="AjouterDeroulement()">Ajouter</a> </td>
                             <td></td>
@@ -351,7 +365,7 @@
                 <div class="row justify-content-center">
                     <div class="col-lg-6">
                         <div class="copyright text-center ">
-                            @ copyright all reserved to Karen - 2023
+                            @ copyright all reserved to Karen ETU001445 - 2023
                         </div>
                     </div>
                 </div>

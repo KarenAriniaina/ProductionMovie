@@ -102,13 +102,9 @@
             <div class="container">
                 <div class="row">
                     <div class="col-lg-12">
-                        <div class="subscribe-home py-4 px-4 mb-5 bg-grey">
+                        <div class="subscribe-home py-4 px-4 mb-5 mt-4 bg-grey">
                             <form action="<%= request.getContextPath()%>/" method="GET">
                                 <div class="form-group row align-items-center mb-0">
-                                    <div class="col-sm-4 col-lg-2">
-                                        <label>Titre Film</label>
-                                        <input type="text" class="form-control mb-3 mb-lg-0" name="TitreFilm" id="colFormLabel" placeholder="Titre film">
-                                    </div>
                                     <div class="col-sm-4 col-lg-2">
                                         <label>Titre scène</label>
                                         <input type="text" class="form-control mb-3 mb-lg-0" name="Titre" id="colFormLabel" placeholder="Titre scène">
@@ -130,7 +126,16 @@
                                             <% } %>
                                         </select>
                                     </div>
-                                    <div class="col-sm-2 col-lg-2">
+                                    <div class="col-sm-4 col-lg-2">
+                                        <label>Statut</label>
+                                        <select name="Statut" class="form-control mb-3 mb-lg-0">
+                                            <option value="">Statut</option>
+                                            <option value="0">ecriture En cours</option>
+                                            <option value="1">ecriture Termine</option>
+                                            <option value="2">Planifie</option>
+                                        </select>
+                                    </div>
+                                    <div class="col-sm-2 col-lg-2 ml-auto">
                                         <input type="submit" class="btn btn-dark mt-4" value="Search"/>
                                     </div>
                                 </div>
@@ -143,11 +148,11 @@
                     <div class="col-lg-4 col-md-4 col-sm-6 mb-5">
                         <div class="category-item">
                             <div class="category-img">
-                                <a href="blog-single.html"><img src="css/images/cat/cinema.jpg" alt="" class="img-fluid w-100"></a>
+                                <a href="<%= request.getContextPath()%>/DetailScene?id=<%= sc.getId() %>"><img src="css/images/cat/cinema.jpg" alt="" class="img-fluid w-100"></a>
                             </div>
                             <div class="content">
                                 <h3 class="text-color text-uppercase font-sm letter-spacing font-extra">Titre</h3>
-                                <h4><a href="blog-single.html"><%= sc.getTitre()%></a></h4>
+                                <h4><a href="<%= request.getContextPath()%>/DetailScene?id=<%= sc.getId() %>"><%= sc.getTitre()%></a></h4>
                             </div>
                         </div>
                     </div>
@@ -185,7 +190,7 @@
                 <div class="row justify-content-center">
                     <div class="col-lg-6">
                         <div class="copyright text-center ">
-                            @ copyright all reserved to Karen - 2023
+                             @ copyright all reserved to Karen ETU001445 - 2023
                         </div>
                     </div>
                 </div>

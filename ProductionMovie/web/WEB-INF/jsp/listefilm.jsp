@@ -103,11 +103,11 @@
                 <div class="col-lg-4 col-md-4 col-sm-6 mb-5">
                     <div class="category-item">
                         <div class="category-img">
-                            <a href="<%= request.getContextPath()%>/Film?idFilm=<%= f.getId() %>"><img src="css/images/cat/cinema.jpg" alt="" class="img-fluid w-100"></a>
+                            <a href="<%= request.getContextPath()%>/DemandePlanification?idFilm=<%= f.getId() %>"><img src="css/images/cat/cinema.jpg" alt="" class="img-fluid w-100"></a>
                         </div>
                         <div class="content">
                             <h3 class="text-color text-uppercase font-sm letter-spacing font-extra">Titre</h3>
-                            <h4><a href="<%= request.getContextPath()%>/Film?idFilm=<%= f.getId() %>"><%= f.getTitre()%></a></h4>
+                            <h4><a href="<%= request.getContextPath()%>/DemandePlanification?idFilm=<%= f.getId() %>"><%= f.getTitre()%></a></h4>
                         </div>
                     </div>
                 </div>
@@ -146,7 +146,7 @@
             <div class="row justify-content-center">
                 <div class="col-lg-6">
                     <div class="copyright text-center ">
-                        @ copyright all reserved to Karen - 2023
+                        @ copyright all reserved to Karen ETU001445 - 2023
                     </div>
                 </div>
             </div>

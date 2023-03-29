@@ -1,3 +1,5 @@
+<%@page import="modele.Deroulement"%>
+<%@page import="modele.V_Deroulement"%>
 <%@page import="modele.Emotion"%>
 <%@page import="modele.Profil"%>
 <%@page import="modele.Plateaux"%>
@@ -27,10 +29,12 @@
     if (session.getAttribute("idActeur") != null) {
         sActeur = (int) session.getAttribute("idActeur");
     }
+    Scene sc = (Scene) request.getAttribute("scene");
     ArrayList<Plateaux> lp = (ArrayList<Plateaux>) request.getAttribute("lp");
     ArrayList<Profil> la = (ArrayList<Profil>) request.getAttribute("la");
+    ArrayList<Profil> lae = (ArrayList<Profil>) request.getAttribute("lae");
     ArrayList<Emotion> le = (ArrayList<Emotion>) request.getAttribute("le");
-    int idFilm = (int) request.getAttribute("idFilm");
+    ArrayList<V_Deroulement> ld = (ArrayList<V_Deroulement>) request.getAttribute("ld");
 %>
 
 
@@ -38,7 +42,7 @@
 
     <head>
         <meta charset="utf-8">
-        <title>Liste scènes</title>
+        <title>Detail scene</title>
         <meta http-equiv="X-UA-Compatible" content="IE=edge">
         <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 
@@ -63,11 +67,32 @@
     <script>
         let i = 1;
         var listeActeur = [];
+        var listeActeurExistante = [];
+        var listeActeurSupprimer = [];
+        var OrdreExistante = [];
+        var listeDeroulementSupprimer = [];
+        var ListeDeroulementModifier = [];
+        var ListeOrdreModifier = [];
+        <%
+            for (Profil p : lae) {
+        %>
+        listeActeurExistante.push("<%= Integer.toString(p.getId())%>");
+        <%
+            }
+        %>
+
+        <%
+            for (V_Deroulement V : ld) {
+        %>
+        OrdreExistante.push("<%= V.getOrdre()%>");
+        <%
+            }
+        %>
         function AjoutActeur() {
             var tabActeur = document.getElementById("tbActeur");
             var selectActeur = document.getElementById("idActeur");
             let selected = selectActeur.value.split(" ");
-            if (!listeActeur.includes(selected[0])) {
+            if (!listeActeur.includes(selected[0]) && !listeActeurExistante.includes(selected[0])) {
                 let btr = document.createElement("tr");
                 btr.setAttribute("id", "Element" + i);
                 let id = "Element" + i;
@@ -76,7 +101,7 @@
                 let cellText = document.createTextNode(selected[1]);
                 let cellButton = document.createElement("a");
                 let textButton = document.createTextNode("Supprimer");
-                cellButton.setAttribute("class", "form-group btn btn-primary col-lg-3");
+                cellButton.setAttribute("class", "form-group btn btn-primary col-lg-4");
                 cellButton.setAttribute("onclick", "supprimerActeur('" + id + "','" + selected[0] + "')");
                 cellButton.appendChild(textButton);
                 cell.appendChild(cellText);
@@ -125,7 +150,7 @@
             var NomAct = "";
             var idAct = "";
             if (Acteur !== "") {
-                Acteur = Acteur.split("@");
+                Acteur = Acteur.split(" ");
                 idAct = Acteur[0];
                 NomAct = Acteur[1];
             }
@@ -135,7 +160,7 @@
                 console.log("niditra tato")
                 alert("Texte ou ordre vide!!!!");
             } else {
-                if (!listeOrdre.includes(Ordre)) {
+                if (!listeOrdre.includes(Ordre) && !OrdreExistante.includes(Ordre)) {
                     let btr = document.createElement("tr");
                     btr.setAttribute("id", "Deroulement" + d);
                     let id = "Deroulement" + i;
@@ -244,6 +269,41 @@
             form.removeChild(document.getElementById("Dureevalue" + id));
             tabDerouelement.removeChild(sup);
         }
+
+        function SupprimerActeur(id) {
+            listeActeurExistante.splice(listeActeurExistante.indexOf(id), 1);
+            var tabActeur = document.getElementById("tbActeur");
+            document.getElementById("Acteur" + id).remove();
+            listeActeurSupprimer.push(id)
+            document.getElementById("lacteursuppr").value = listeActeurSupprimer;
+            //tabActeur.removeChild(sup);
+            console.log(listeActeurExistante);
+        }
+
+        function ModificationDeroulement(id, ordreAvant) {
+            let ordre = document.getElementById("ordreDeroulement" + id).value;
+            if (!listeOrdre.includes(ordre) || !OrdreExistante.includes(ordre)) {
+                OrdreExistante.splice(OrdreExistante.indexOf(ordreAvant), 1);
+                if (ListeDeroulementModifier.includes(id)) {
+                    let index = ListeDeroulementModifier.indexOf(id);
+                    ListeOrdreModifier.splice(index, 1);
+                } else
+                    ListeDeroulementModifier.push(id);
+                document.getElementById("lderoulementmodif").value = ListeDeroulementModifier;
+                ListeOrdreModifier.push(ordre);
+                document.getElementById("lordremodif").value = ListeOrdreModifier;
+            } else {
+                alert("Ordre deja donné");
+            }
+        }
+
+        function SuppressionDeroulement(id, ordre) {
+            let suppr = document.getElementById("deroulement" + id);
+            OrdreExistante.splice(OrdreExistante.indexOf(ordre), 1);
+            listeDeroulementSupprimer.push(id);
+            document.getElementById("lderoulementsuppr").value = listeDeroulementSupprimer;
+            suppr.remove();
+        }
     </script>
     <body>
         <header class="header-top bg-dark">
@@ -283,21 +343,30 @@
         <div class="row" style="margin-top: 70px">
             <div class="col-md-2"></div>
             <div class="col-md-8 sidebar-widget subscribe mb-5">
-                <h4 class="text-center widget-title">Ajout de scène</h4>
-                <form action="<%= request.getContextPath()%>/AjoutSceneSubmit" method="POST" id="form">
+                <h4 class="text-center widget-title">Modification de la scène "<%= sc.getTitre()%>"</h4>
+                <form action="<%= request.getContextPath()%>/ModfifSceneSubmit" method="POST" id="form">
                     <label>Titre</label>
-                    <input type="text" class="form-control" placeholder="Titre" name="Titre"/>
+                    <input type="text" class="form-control" placeholder="Titre" name="Titre" value="<%= sc.getTitre()%>"/>
                     <label class="mt-3">Plateaux</label>
                     <select class="form-control" name="idPlateaux">
                         <option value="">Plateaux</option>
                         <% for (Plateaux p : lp) {%>
-                        <option value="<%= p.getId()%>"><%= p.getNom()%></option>
+                        <option value="<%= p.getId()%>"
+                                <% if (p.getId() == sc.getIdPlateaux()) { %>
+                                selected
+                                <% }%>
+                                ><%= p.getNom()%></option>
                         <% } %>
                     </select>
-                    <label class="mt-3">Statut:</label>
-                    <select name="Statut" class="form-control mb-3 mb-lg-0">
-                        <option value="0">ecriture En cours</option>
-                        <option value="1">ecriture Termine</option>
+                    <label class="mt-3">Statut</label>
+                    <select class="form-control" name="Statut">
+                        <option value="">Statut</option>
+                        <option value="0" <% if (sc.getStatut()==0) { %>
+                                selected
+                                <% }%>>ecriture En cours</option>
+                        <option value="1" <% if (sc.getStatut()==1) { %>
+                                selected
+                                <% }%>>ecriture Termine</option>
                     </select>
                     <table class="table" id="tbActeur">
                         <tr>
@@ -313,8 +382,14 @@
                                     <% }%>
                                 </select>
                             </td>
-                            <td><a class="form-group btn btn-primary col-lg-3" onclick="AjoutActeur()">Ajouter</a> </td>
+                            <td><a class="form-group btn btn-primary col-lg-4" onclick="AjoutActeur()">Ajouter</a> </td>
                         </tr>
+                        <% for (Profil p : lae) {%>
+                        <tr id="Acteur<%= p.getId()%>">
+                            <td><%= p.getNom()%></td>
+                            <td><a class="form-group btn btn-primary col-lg-4" onclick="SupprimerActeur(<%= p.getId()%>)">Supprimer</a> </td>
+                        </tr>
+                        <% } %>
                     </table>
                     <label>Deroulement</label>
                     <table class="table" id="tbDeroulement">
@@ -340,7 +415,7 @@
                                 <select class="form-control" id="idActeurDialogue">
                                     <option value="">Acteur</option>
                                     <% for (Profil pr : la) {%>
-                                    <option value="<%= pr.getId() + "@" + pr.getNom()%>"><%= pr.getNom()%></option>
+                                    <option value="<%= pr.getId() + " " + pr.getNom()%>"><%= pr.getNom()%></option>
                                     <% }%>
                                 </select>
                             </td>
@@ -350,11 +425,27 @@
                             <td><a class="form-group btn btn-primary col-lg-12" onclick="AjouterDeroulement()">Ajouter</a> </td>
                             <td></td>
                         </tr>
-                    </table>
+                        <% for (V_Deroulement d : ld) {%>
+                        <tr id="deroulement<%= d.getId()%>">    
+                            <td><% if (d.getEmotion() != null) {%><%= d.getEmotion()%> <%} %></td>
+                            <td><% if (d.getNomActeur() != null) {%><%= d.getNomActeur()%> <% }%></td>
+                            <td><%= d.getTexte()%></td>
+                            <td><%= d.getDuree()%></td>
+                            <td><input type="text" class="form-control" value="<%= d.getOrdre()%>" id="ordreDeroulement<%= d.getId()%>" /></td>
+                            <td><a class="form-group btn btn-primary col-lg-12" onclick="ModificationDeroulement(<%= d.getId()%>,<%= d.getOrdre()%>)">Modifier</a> </td>
+                            <td><a class="form-group btn btn-primary col-lg-12" onclick="SuppressionDeroulement(<%= d.getId()%>,<%= d.getOrdre()%>)">Supprimer</a> </td>
+                        </tr>
+                        <% }%>
 
-                    <input type="hidden" name="idFilm" value="<%= idFilm%>"/>
+                    </table>
                     <input type="hidden" name="nbrscenario" id="nbrscenario" value=""/>
                     <input type="hidden" name="lacteur" id="lacteur" value=""/>
+                    <input type="hidden" name="lacteursuppr" id="lacteursuppr" value=""/>
+                    <input type="hidden" name="lderoulementsuppr" id="lderoulementsuppr" value=""/>
+                    <input type="hidden" name="lderoulementmodif" id="lderoulementmodif" value=""/>
+                    <input type="hidden" name="lordremodif" id="lordremodif" value=""/>
+                    <input type="hidden" name="idScene"  value="<%= sc.getId()%>"/>
+                    <input type="hidden" name="idFilm"  value="<%= sc.getIdFilm()%>"/>
                     <input type="submit" class="btn btn-primary mt-3 col-lg-12" onclick="validation()" value="Valider" />
                 </form>
             </div>
@@ -365,7 +456,7 @@
                 <div class="row justify-content-center">
                     <div class="col-lg-6">
                         <div class="copyright text-center ">
-                            @ copyright all reserved to Karen ETU001445 - 2023
+                             @ copyright all reserved to Karen ETU001445 - 2023
                         </div>
                     </div>
                 </div>

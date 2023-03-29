@@ -1,14 +1,16 @@
-<%@page import="modele.Film"%>
-<%@page import="java.util.ArrayList"%>
-<%@page contentType="text/html" pageEncoding="UTF-8"%>
-<!DOCTYPE html>
+<%-- 
+    Document   : DetailSceneNonUpdate
+    Created on : 16 mars 2023, 20:37:29
+    Author     : Ari
+--%>
 
-<!--
- // WEBSITE: https://themefisher.com
- // TWITTER: https://twitter.com/themefisher
- // FACEBOOK: https://www.facebook.com/themefisher
- // GITHUB: https://github.com/themefisher/
--->
+<%@page import="modele.V_Deroulement"%>
+<%@page import="modele.Emotion"%>
+<%@page import="modele.Profil"%>
+<%@page import="modele.Plateaux"%>
+<%@page import="java.util.ArrayList"%>
+<%@page import="modele.Scene"%>
+<%@page contentType="text/html" pageEncoding="UTF-8"%>
 
 <%
     int sAuteur = 0;
@@ -24,16 +26,20 @@
     if (session.getAttribute("idActeur") != null) {
         sActeur = (int) session.getAttribute("idActeur");
     }
-    String error=(String) request.getAttribute("error");
-    ArrayList<Film> lf=(ArrayList<Film>) request.getAttribute("lf");
+    Scene sc = (Scene) request.getAttribute("scene");
+    ArrayList<Plateaux> lp = (ArrayList<Plateaux>) request.getAttribute("lp");
+    ArrayList<Profil> la = (ArrayList<Profil>) request.getAttribute("la");
+    ArrayList<Profil> lae = (ArrayList<Profil>) request.getAttribute("lae");
+    ArrayList<Emotion> le = (ArrayList<Emotion>) request.getAttribute("le");
+    ArrayList<V_Deroulement> ld = (ArrayList<V_Deroulement>) request.getAttribute("ld");
+    Plateaux p = (Plateaux) request.getAttribute("p");
 %>
 
-
-<html lang="en">
-
+<!DOCTYPE html>
+<html>
     <head>
         <meta charset="utf-8">
-        <title>Choix du film</title>
+        <title>Detail scene</title>
         <meta http-equiv="X-UA-Compatible" content="IE=edge">
         <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 
@@ -89,25 +95,70 @@
                 </nav>
             </div>
         </header>
+        <section class="banner">
+            <div class="container">
+                <div class="banner-img">
+                    <a href="#"><img src="css/images/cat/cinema.jpg" alt="" class="img-fluid w-100" ></a>
+                </div>
+                <div class="row">
+                    <div class="col-lg-12">
+                        <div class="banner-content text-center">
+                            <div class="meta-cat">
+                                <span class="text-capitalize letter-spacing-1 cat-name font-extra text-color">Scène</span>
+                            </div>
+                            <div class="post-title">
+                                <h2><a href="#"><%= sc.getTitre()%></a></h2>
+                            </div>
 
-        <div class="row" style="margin-top: 100px">
-            <div class="col-md-4"></div>
-            <div class="col-md-4 sidebar-widget subscribe mb-5">
-                <h4 class="text-center widget-title">Choix du film </h4>
-                <form action="<%= request.getContextPath()%>/AjoutScene" method="GET">
-                    <label>Film</label>
-                    <select class="form-control" name="idFilm">
-                        <option value="">Film</option>
-                        <% for (Film f: lf) { %>
-                        <option value="<%= f.getId()%>"><%= f.getTitre()%></option>
+                            <div class="post-meta footer-meta">
+                                <ul class="list-inline">
+                                    <li class="post-read list-inline-item"><%= sc.getDureeScene()%></li>
+                                    <li class="post-view list-inline-item"><%= p.getNom()%></li>
+                                </ul>
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+        <div class="row" style="margin-top: 70px">
+            <div class="col-md-2"></div>
+            <div class="col-md-8 sidebar-widget subscribe mb-5">
+                    <table class="table" id="tbActeur">
+                        <tr>
+                            <th>Acteur(s)</th>
+                        </tr>
+                        <% for (Profil pr : lae) {%>
+                        <tr id="Acteur<%= pr.getId()%>">
+                            <td><%= pr.getNom()%></td>
+                        </tr>
                         <% } %>
-                    </select>
-                    <input type="submit" class="btn btn-primary mt-3" value="Choisir" style="width: 460px"/>
-                </form>
+                    </table>
+                    <label>Deroulement</label>
+                    <table class="table" id="tbDeroulement">
+                        <tr>
+                            <th>Emotion</th>
+                            <th>Acteur</th>
+                            <th>Texte</th>
+                            <th>Duree</th>
+                            <th>Ordre</th>
+                        </tr>
+                        <% for (V_Deroulement d : ld) {%>
+                        <tr id="deroulement<%= d.getId()%>">    
+                            <td><% if (d.getEmotion() != null) {%><%= d.getEmotion()%> <%} %></td>
+                            <td><% if (d.getNomActeur() != null) {%><%= d.getNomActeur()%> <% }%></td>
+                            <td><%= d.getTexte()%></td>
+                            <td><%= d.getDuree()%></td>
+                            <td><%= d.getOrdre()%></td>
+                        </tr>
+                        <% }%>
+
+                    </table>
             </div>
         </div>
-
         <section class="footer-2 section-padding gray-bg">
+
             <div class="footer-btm">
                 <div class="row justify-content-center">
                     <div class="col-lg-6">

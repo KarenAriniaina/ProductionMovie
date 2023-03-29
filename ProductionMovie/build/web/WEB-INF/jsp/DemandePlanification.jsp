@@ -1,5 +1,9 @@
 <%@page import="modele.Film"%>
+<%@page import="modele.Emotion"%>
+<%@page import="modele.Profil"%>
+<%@page import="modele.Plateaux"%>
 <%@page import="java.util.ArrayList"%>
+<%@page import="modele.Scene"%>
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
 <!DOCTYPE html>
 
@@ -24,8 +28,9 @@
     if (session.getAttribute("idActeur") != null) {
         sActeur = (int) session.getAttribute("idActeur");
     }
-    String error=(String) request.getAttribute("error");
-    ArrayList<Film> lf=(ArrayList<Film>) request.getAttribute("lf");
+    ArrayList<Scene> lsc = (ArrayList<Scene>) request.getAttribute("lsc");
+    ArrayList<Scene> lscp = (ArrayList<Scene>) request.getAttribute("lscp");
+    Film f = (Film) request.getAttribute("Film");
 %>
 
 
@@ -33,7 +38,7 @@
 
     <head>
         <meta charset="utf-8">
-        <title>Choix du film</title>
+        <title>Demande de planification pour <%= f.getTitre()%></title>
         <meta http-equiv="X-UA-Compatible" content="IE=edge">
         <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 
@@ -55,6 +60,45 @@
         <!-- manin stylesheet -->
         <link rel="stylesheet" href="css/css/style.css">
     </head>
+    <script>
+        let i = 1;
+        var listeScene = [];
+        function AjoutScene() {
+            var tabScene = document.getElementById("tbScene");
+            let val = document.getElementById("idScene").value.split("@");
+            if (listeScene.includes(val[0])) {
+                alert("Scene deja selectionné");
+            } else {
+                let btr = document.createElement("tr");
+                btr.setAttribute("id", "Element" + i);
+                let id = "Element" + i;
+                let cell = document.createElement("td");
+                let cell2 = document.createElement("td");
+                let cellText = document.createTextNode(val[1]);
+                let cellButton = document.createElement("a");
+                let textButton = document.createTextNode("Supprimer");
+                cellButton.setAttribute("class", "form-group btn btn-primary col-lg-5");
+                cellButton.setAttribute("onclick", "supprimerScene('" + id + "','" + val[0] + "')");
+                cellButton.appendChild(textButton);
+                cell.appendChild(cellText);
+                cell2.appendChild(cellButton);
+                btr.appendChild(cell);
+                btr.appendChild(cell2);
+                tabScene.appendChild(btr);
+                listeScene.push(val[0]);
+                document.getElementById("lscene").value = listeScene;
+                i++;
+            }
+        }
+        function supprimerScene(id, value) {
+            var tabScene = document.getElementById("tbScene");
+            var sup = document.getElementById(id);
+            let index = listeScene.indexOf(value);
+            listeScene.splice(index, 1);
+            tabScene.removeChild(sup);
+            document.getElementById("lscene").value = listeScene;
+        }
+    </script>
     <body>
         <header class="header-top bg-dark">
             <div class="container">
@@ -90,29 +134,60 @@
             </div>
         </header>
 
-        <div class="row" style="margin-top: 100px">
-            <div class="col-md-4"></div>
-            <div class="col-md-4 sidebar-widget subscribe mb-5">
-                <h4 class="text-center widget-title">Choix du film </h4>
-                <form action="<%= request.getContextPath()%>/AjoutScene" method="GET">
-                    <label>Film</label>
-                    <select class="form-control" name="idFilm">
-                        <option value="">Film</option>
-                        <% for (Film f: lf) { %>
-                        <option value="<%= f.getId()%>"><%= f.getTitre()%></option>
+        <div class="row" style="margin-top: 70px">
+            <div class="col-md-2"></div>
+            <div class="col-md-8 sidebar-widget subscribe mb-5">
+                <h1 class="text-center widget-title">Demande de planification pour <%= f.getTitre()%></h1>
+                <form action="<%= request.getContextPath()%>/DemandePlanificationSubmit" method="POST" id="form">
+                    <label>Date Debut</label>
+                    <input type="date" class="form-control" placeholder="Titre" name="Dd"/>
+                    <label>Date Fin</label>
+                    <input type="date" class="form-control" placeholder="Titre" name="Df"/>
+                    <table class="table" id="tbScene">
+                        <tr>
+                            <th>Scene</th>
+                            <th></th>
+                        </tr>
+                        <tr>
+                            <td>
+                                <select class="form-control " id="idScene">
+                                    <option value="">Scene</option>
+                                    <% for (Scene s : lsc) {%>
+                                    <option value="<%= s.getId() + "@" + s.getTitre()%>"><%= s.getTitre()%></option>
+                                    <% }%>
+                                </select>
+                            </td>
+                            <td><a class="form-group btn btn-primary col-lg-5" onclick="AjoutScene()">Ajouter</a> </td>
+                        </tr>
+                    </table>
+                    <input type="hidden" name="lscene" id="lscene" value=""/>
+                    <input type="submit" class="btn btn-primary mt-3 col-lg-12" onclick="validation()" value="Valider" />
+                    <% if (!lscp.isEmpty()) { %>
+                    <table class="table">
+                        <tr>
+                            <th>Scene</th>
+                            <th>Plateaux</th>
+                            <th>Date planifié</th>
+                        </tr>
+                        <%for (Scene s : lscp) {%>
+                        <tr>
+                            <td><%= s.getTitre()%></td>
+                            <td><%= s.getPCorrespondant().getNom() %></td>
+                            <td><%= s.getPlanificationCorrespondante().getDate() %></td>
+                        </tr>
                         <% } %>
-                    </select>
-                    <input type="submit" class="btn btn-primary mt-3" value="Choisir" style="width: 460px"/>
+                    </table>
+                    <% }%>
                 </form>
             </div>
         </div>
-
         <section class="footer-2 section-padding gray-bg">
+
             <div class="footer-btm">
                 <div class="row justify-content-center">
                     <div class="col-lg-6">
                         <div class="copyright text-center ">
-                             @ copyright all reserved to Karen ETU001445 - 2023
+                            @ copyright all reserved to Karen ETU001445 - 2023
                         </div>
                     </div>
                 </div>
